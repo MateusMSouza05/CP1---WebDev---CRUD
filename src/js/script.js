@@ -51,24 +51,17 @@ let posts = [
   }
 ];
 
+// Carregar posts do localStorage se existir
+const dados = localStorage.getItem("posts");
+if(dados){
+    posts = JSON.parse(dados);
+}
 
 window.onload = function(){
     mostrarPosts();
-
     document.querySelector("#form-adicionar").addEventListener("submit", addPost);
+    document.querySelector("#form-editar").addEventListener("submit", atualizarPost);
 };
-
-function handleClick(event){
-    const action = event.target.dataset.action;
-    const index = event.target.dataset.index;
-
-    if(action === "Editar"){
-        editarPost(index)
-    }
-    else if(action === "Apagar"){
-        apagarPost(index)
-}
-}
 
 // ---- Função para renderizar os cards ----
 function mostrarPosts() {
@@ -104,19 +97,23 @@ function mostrarPosts() {
 
         container.appendChild(card);
 
+        // Deletar
         const btnDelete = card.querySelector(".delete");
         btnDelete.addEventListener("click", () => apagarPost(index));
-
+        // Favorito
         const estrela = card.querySelector(".fa-star");
         estrela.addEventListener("click", () => {
             posts[index].favorita = !posts[index].favorita;
+            salvarPosts();
             mostrarPosts();
         });
+        // Editar
+        const btnEdit = card.querySelector(".edit");
+        btnEdit.addEventListener("click", () => abrirModalEditar(index));
     });
 }
 
-
-// ---- Modal de Adicionar ----
+// ----Adicionar Card ----
 const btnAdicionar = document.getElementById("btnAdicionar");
 const modalAdicionar = document.getElementById("modal-adicionar");
 const closeAdicionar = document.getElementById("adicionar");
@@ -130,11 +127,8 @@ closeAdicionar.addEventListener("click", () => {
 });
 
 window.addEventListener("click", (event) => {
-    if (event.target === modalAdicionar) {
-        modalAdicionar.style.display = "none";
-    }
+    if (event.target === modalAdicionar) modalAdicionar.style.display = "none";
 });
-
 
 function addPost(event) {
     event.preventDefault(); 
@@ -143,24 +137,19 @@ function addPost(event) {
         posicao: document.getElementById("add-posicao").value,
         clube: document.getElementById("add-clube").value,
         foto: document.getElementById("add-foto").value,
-        gols: parseInt(document.getElementById("add-gols").value),
-        assistencias: parseInt(document.getElementById("add-assistencias").value),
-        jogos: parseInt(document.getElementById("add-jogos").value),
+        gols: parseInt(document.getElementById("add-gols").value) || 0,
+        assistencias: parseInt(document.getElementById("add-assistencias").value) || 0,
+        jogos: parseInt(document.getElementById("add-jogos").value) || 0,
         favorita: false
     };
 
-    posts.push(novo);               
-    mostrarPosts();                 
-    modalAdicionar.style.display = "none"; 
-    event.target.reset();           
-    alert("Jogadora adicionada com sucesso!!"); 
+    posts.push(novo);
+    salvarPosts();
+    mostrarPosts();
+    modalAdicionar.style.display = "none";
+    event.target.reset();
+    alert("Jogadora adicionada com sucesso!!");
 }
-
-function salvarPosts(){
-    localStorage.setItem("posts", JSON.stringify(posts));
-}
-
-// ---- Editar Card ----
 
 // ---- Deletar Card ----
 function apagarPost(index){
@@ -169,6 +158,58 @@ function apagarPost(index){
         posts.splice(index,1);
         salvarPosts();
         mostrarPosts();
+    }
+}
 
-}}
+// ---- Editar ----
+const modalEditar = document.getElementById("modal-editar");
+const closeEditar = document.getElementById("editar");
 
+function abrirModalEditar(index){
+    const post = posts[index];
+
+    document.getElementById("edit-index").value = index;
+    document.getElementById("edit-nome").value = post.nome;
+    document.getElementById("edit-posicao").value = post.posicao;
+    document.getElementById("edit-clube").value = post.clube;
+    document.getElementById("edit-foto").value = post.foto;
+    document.getElementById("edit-gols").value = post.gols;
+    document.getElementById("edit-assistencias").value = post.assistencias;
+    document.getElementById("edit-jogos").value = post.jogos;
+
+    modalEditar.style.display = "block";
+}
+
+closeEditar.addEventListener("click", () => {
+    modalEditar.style.display = "none";
+});
+
+window.addEventListener("click", (event) => {
+    if(event.target === modalEditar) modalEditar.style.display = "none";
+});
+
+// ---- Atualizar Post ----
+function atualizarPost(e){
+    e.preventDefault();
+    const index = parseInt(document.getElementById("edit-index").value);
+
+    posts[index] = {
+        ...posts[index], 
+        nome: document.getElementById("edit-nome").value,
+        posicao: document.getElementById("edit-posicao").value,
+        clube: document.getElementById("edit-clube").value,
+        foto: document.getElementById("edit-foto").value,
+        gols: parseInt(document.getElementById("edit-gols").value) || 0,
+        assistencias: parseInt(document.getElementById("edit-assistencias").value) || 0,
+        jogos: parseInt(document.getElementById("edit-jogos").value) || 0
+    };
+
+    salvarPosts();
+    mostrarPosts();
+    modalEditar.style.display = "none";
+}
+
+// ---- Salvar no localStorage ----
+function salvarPosts(){
+    localStorage.setItem("posts", JSON.stringify(posts));
+}
