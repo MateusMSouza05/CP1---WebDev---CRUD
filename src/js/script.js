@@ -52,9 +52,12 @@ let posts = [
 ];
 
 // Carregar posts do localStorage se existir
-const dados = localStorage.getItem("posts");
-if(dados){
+let dados = localStorage.getItem("posts");
+
+if (dados) {
     posts = JSON.parse(dados);
+} else {
+    localStorage.setItem("posts", JSON.stringify(posts));
 }
 
 window.onload = function(){
