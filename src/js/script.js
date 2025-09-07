@@ -58,11 +58,22 @@ window.onload = function(){
     document.querySelector("#form-adicionar").addEventListener("submit", addPost);
 };
 
+function handleClick(event){
+    const action = event.target.dataset.action;
+    const index = event.target.dataset.index;
+
+    if(action === "Editar"){
+        editarPost(index)
+    }
+    else if(action === "Apagar"){
+        apagarPost(index)
+}
+}
 
 // ---- Função para renderizar os cards ----
 function mostrarPosts() {
     const container = document.getElementById("cards-container");
-    container.innerHTML = ""; // limpa antes de renderizar
+    container.innerHTML = ""; 
 
     posts.forEach((post, index) => {
         const card = document.createElement("div");
@@ -92,6 +103,15 @@ function mostrarPosts() {
         `;
 
         container.appendChild(card);
+
+        const btnDelete = card.querySelector(".delete");
+        btnDelete.addEventListener("click", () => apagarPost(index));
+
+        const estrela = card.querySelector(".fa-star");
+        estrela.addEventListener("click", () => {
+            posts[index].favorita = !posts[index].favorita;
+            mostrarPosts();
+        });
     });
 }
 
@@ -117,8 +137,7 @@ window.addEventListener("click", (event) => {
 
 
 function addPost(event) {
-    event.preventDefault(); // impede reload da página
-
+    event.preventDefault(); 
     const novo = {
         nome: document.getElementById("add-nome").value,
         posicao: document.getElementById("add-posicao").value,
@@ -134,6 +153,22 @@ function addPost(event) {
     mostrarPosts();                 
     modalAdicionar.style.display = "none"; 
     event.target.reset();           
-    alert("Jogadora adicionada com sucesso! ✅"); 
+    alert("Jogadora adicionada com sucesso!!"); 
 }
+
+function salvarPosts(){
+    localStorage.setItem("posts", JSON.stringify(posts));
+}
+
+// ---- Editar Card ----
+
+// ---- Deletar Card ----
+function apagarPost(index){
+    const confirmar = confirm("Você realmente deseja excluir essa jogadora?");
+    if(confirmar){
+        posts.splice(index,1);
+        salvarPosts();
+        mostrarPosts();
+
+}}
 
