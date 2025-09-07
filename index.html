@@ -37,6 +37,24 @@
             </form>
         </div>
     </div>
+    
+    <div id="modal-editar" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-editar">&times;</span>
+            <h2>Editar Informações</h2>
+            <form id="form-editar">
+                <input type="hidden" id="edit-index">
+                <input type="text" id="edit-nome" placeholder="Nome da Jogadora" required>
+                <input type="text" id="edit-posicao" placeholder="Posição" required>
+                <input type="text" id="edit-clube" placeholder="Clube" required>
+                <input type="url" id="edit-foto" placeholder="URL da Foto" required>
+                <input type="number" id="edit-gols" placeholder="Gols" required>
+                <input type="number" id="edit-assistencias" placeholder="Assistências" required>
+                <input type="number" id="edit-jogos" placeholder="Jogos" required>
+                <button type="submit">Atualizar</button>
+            </form>
+        </div>
+    </div>
 
 </body>
 </html>
